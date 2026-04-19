@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Join BookVault — Register{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <span class="eyebrow">Get started</span>
+        <h2>Create Account</h2>
+        <p class="subtitle">Join BookVault for free. Discover, track, and share the books you love.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" placeholder="At least 8 characters" required>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-gold">Create Account →</button>
+            </div>
+        </form>
+
+        <div style="margin-top:20px;">
+            <p class="form-link">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Explore Books — BookVault{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <span class="eyebrow">The Collection</span>
+    <h1>Explore Books</h1>
+    <div class="divider"></div>
+    <p>Discover titles across every genre. Filter, search, and find your next great read.</p>
+</div>
+
+<!-- Filter Bar -->
+<form method="get" class="filter-bar">
+    <div class="form-group">
+        <label>Search by title</label>
+        <input type="text" name="title" value="{{ request.GET.title }}" class="form-control" placeholder="e.g. The Great Gatsby…">
+    </div>
+    <div class="form-group">
+        <label>Category</label>
+        <select name="category" class="form-control">
+            <option value="">All genres</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Author</label>
+        <select name="author" class="form-control">
+            <option value="">All authors</option>
+            {% for a in authors %}
+                <option value="{{ a.id }}" {% if request.GET.author == a.id|stringformat:"s" %}selected{% endif %}>{{ a.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Min price</label>
+        <input type="number" name="min_price" value="{{ request.GET.min_price }}" class="form-control" placeholder="0" style="width:100px;">
+    </div>
+    <div class="form-group">
+        <label>Max price</label>
+        <input type="number" name="max_price" value="{{ request.GET.max_price }}" class="form-control" placeholder="999" style="width:100px;">
+    </div>
+    <div class="form-group">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-gold btn-sm" style="height:43px;">Filter</button>
+    </div>
+</form>
+
+<!-- Book Grid -->
+{% if books %}
+    <div class="book-grid">
+        {% for book in books %}
+            <a href="{% url 'book_detail' book.pk %}" class="book-card">
+                <div class="book-cover-wrap">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                        <div class="book-cover-placeholder">{{ book.title|slice:":2"|upper }}</div>
+                    {% endif %}
+                </div>
+                <div class="book-info">
+                    <div class="book-category">{{ book.category.name }}</div>
+                    <div class="book-title">{{ book.title }}</div>
+                    <div class="book-author">{{ book.author.name }}</div>
+                    <div class="book-price">${{ book.price }}</div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3>No books found</h3>
+        <p>Try adjusting your filters or add a new book to the collection.</p>
+    </div>
+{% endif %}
+{% endblock %}

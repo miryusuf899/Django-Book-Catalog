@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Check Your Email — BookVault{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-card" style="text-align:center;">
+        <div style="font-size:52px;margin-bottom:20px;">📬</div>
+        <span class="eyebrow">Email sent</span>
+        <h2>Check Your Inbox</h2>
+        <p class="subtitle" style="margin-bottom:28px;">We've sent a password reset link to your email address. It may take a minute to arrive — check your spam folder too.</p>
+        <a href="{% url 'login' %}" class="btn btn-gold" style="width:100%;justify-content:center;">Back to Login</a>
+    </div>
+</div>
+{% endblock %}

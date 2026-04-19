@@ -1,0 +1,188 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookVault{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div id="ambient-canvas-container">
+        <canvas id="particle-canvas"></canvas>
+        <div id="cursor-glow"></div>
+        <div class="nebula-overlay"></div>
+    </div>
+    <div class="grain"></div>
+    <div class="stars" id="stars"></div>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="{% url 'book_list' %}" class="logo">
+                <span class="logo-mark">B</span>
+                <span class="logo-text">ook<em>Vault</em></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{% url 'book_list' %}">Explore</a></li>
+                <li><a href="{% url 'statistics' %}">Statistics</a></li>
+                {% if request.session.user_id %}
+                    <li><a href="{% url 'create_book' %}" class="btn-nav-add">+ Add Book</a></li>
+                    <li><a href="{% url 'home' %}" class="nav-profile">Profile</a></li>
+                    <li><a href="{% url 'logout' %}" class="btn-nav-logout">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="btn-nav-join">Join Free</a></li>
+                {% endif %}
+            </ul>
+            <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="messages-wrap">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <span class="alert-dot"></span>
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="logo-mark sm">B</span>
+                <span>BookVault</span>
+            </div>
+            <p>© 2026 BookVault Project — Crafted for Excellence</p>
+            <div class="footer-links">
+                <a href="{% url 'book_list' %}">Explore</a>
+                <a href="{% url 'statistics' %}">Stats</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // 1. Поле звезд (Star field) с эффектом слежения
+    const starsEl = document.getElementById('stars');
+    if (starsEl) {
+        // Создаем звезды
+        for (let i = 0; i < 120; i++) { // Увеличил до 120 для плотности
+            const s = document.createElement('div');
+            s.className = 'star';
+            const size = Math.random() * 2.5 + 0.5;
+            s.style.cssText = `
+                width:${size}px;
+                height:${size}px;
+                left:${Math.random()*100}%;
+                top:${Math.random()*100}%;
+                animation-duration:${3 + Math.random()*5}s;
+                animation-delay:${Math.random()*6}s
+            `;
+            starsEl.appendChild(s);
+        }
+
+        // Эффект слежения (Parallax)
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX - window.innerWidth / 2) * 0.02; // Коэффициент смещения по X
+            const y = (e.clientY - window.innerHeight / 2) * 0.02; // Коэффициент смещения по Y
+            
+            // Плавное смещение слоя звезд
+            starsEl.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    }
+
+    // 2. Система частиц (Particle System) и Torch
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const glow = document.getElementById('cursor-glow');
+        let particles = [];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('mousemove', (e) => {
+            if (glow) {
+                // Плавное движение золотого свечения (Torch)
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            }
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(201, 168, 76, 0.4)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+
+        initParticles();
+        animateParticles();
+    }
+
+    // 3. Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.book-card').forEach(card => {
+    card.onmousemove = e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+        card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+    };
+});
+</script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

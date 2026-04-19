@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile — BookVault{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="page-heading" style="padding-bottom:32px;">
+        <span class="eyebrow">My Account</span>
+        <h1>Profile</h1>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-avatar">
+            {{ data.username|slice:":1"|upper }}
+        </div>
+
+        <div class="profile-name">{{ data.username }}</div>
+        <div class="profile-email">{{ data.email }}</div>
+
+        <div class="profile-meta">
+            {% if data.is_active %}
+                <span class="profile-badge active">✓ Verified</span>
+            {% else %}
+                <span class="profile-badge">⏳ Pending verification</span>
+            {% endif %}
+            <span class="profile-badge">📚 Member</span>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{% url 'create_book' %}" class="btn btn-gold btn-sm">+ Add Book</a>
+            <a href="{% url 'change_password' %}" class="btn btn-ghost btn-sm">🔑 Change Password</a>
+            <a href="{% url 'book_list' %}" class="btn btn-ghost btn-sm">Explore Books</a>
+            <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

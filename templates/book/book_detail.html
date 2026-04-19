@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} — BookVault{% endblock %}
+
+{% block content %}
+<div class="book-detail">
+    <div class="book-detail-grid">
+
+        <!-- Cover -->
+        <div class="book-detail-cover">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+            {% else %}
+                <div class="cover-placeholder">{{ book.title|slice:":2"|upper }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="book-detail-meta">
+            <span class="eyebrow">{{ book.category.name }}</span>
+            <h1>{{ book.title }}</h1>
+            <p class="by">by <strong style="color:var(--gold-light)">{{ book.author.name }}</strong></p>
+
+            <span class="meta-pill">📖 {{ book.category.name }}</span>
+            <span class="meta-pill">✍️ {{ book.author.name }}</span>
+
+            <div class="price-tag">${{ book.price }}</div>
+
+            {% if book.description %}
+                <p class="book-desc">{{ book.description }}</p>
+            {% endif %}
+
+            <div class="action-row">
+                {% if request.session.user_id and book.created_by_id == request.session.user_id %}
+                    <a href="{% url 'book_update' book.pk %}" class="btn btn-gold">✏️ Edit Book</a>
+                    <a href="{% url 'book_delete' book.pk %}" class="btn btn-danger">🗑 Delete</a>
+                {% endif %}
+                <a href="{% url 'book_list' %}" class="btn btn-ghost">← Back to List</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="reviews-section">
+        <h3>Reader Reviews</h3>
+        {% for review in book.review_set.all %}
+            <div class="review-card reveal">
+                <div class="review-stars">★★★★★</div>
+                <div class="review-author">{{ review.user.username|default:"Anonymous" }}</div>
+                <div class="review-text">{{ review.text }}</div>
+            </div>
+        {% empty %}
+            <div class="empty-state" style="padding:40px 0;">
+                <div class="empty-icon" style="font-size:40px;">💬</div>
+                <h3 style="font-size:18px;">No reviews yet</h3>
+                <p>Be the first to share your thoughts on this book.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

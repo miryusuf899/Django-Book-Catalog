@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Statistics — BookVault{% endblock %}
+
+{% block content %}
+<div class="stats-page">
+    <div class="page-heading">
+        <span class="eyebrow">By the Numbers</span>
+        <h1>Collection Statistics</h1>
+        <div class="divider"></div>
+        <p>A data-driven look at the BookVault library — authors, prices, and the full collection at a glance.</p>
+    </div>
+
+    <!-- Aggregate Cards -->
+    <div class="stats-grid">
+        <div class="stat-card" style="animation-delay:.05s">
+            <div class="stat-label">Total Books</div>
+            <div class="stat-value">{{ stats.total_books|default:"0" }}</div>
+            <div class="stat-sub">in the collection</div>
+        </div>
+        <div class="stat-card" style="animation-delay:.10s">
+            <div class="stat-label">Average Price</div>
+            <div class="stat-value">${{ stats.average_price|floatformat:0|default:"0" }}</div>
+            <div class="stat-sub">across all titles</div>
+        </div>
+        <div class="stat-card" style="animation-delay:.15s">
+            <div class="stat-label">Highest Price</div>
+            <div class="stat-value">${{ stats.max_price|floatformat:0|default:"0" }}</div>
+            <div class="stat-sub">most expensive title</div>
+        </div>
+        <div class="stat-card" style="animation-delay:.20s">
+            <div class="stat-label">Lowest Price</div>
+            <div class="stat-value">${{ stats.min_price|floatformat:0|default:"0" }}</div>
+            <div class="stat-sub">most affordable title</div>
+        </div>
+    </div>
+
+    <!-- Authors Table -->
+    <div class="page-heading" style="padding:0 0 24px;">
+        <span class="eyebrow">Author Breakdown</span>
+        <h1 style="font-size:28px;">Books per Author</h1>
+    </div>
+
+    <table class="author-table reveal">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Author</th>
+                <th>Books in Collection</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for author in authors %}
+                <tr>
+                    <td style="color:var(--text-3);font-size:13px;">{{ forloop.counter }}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:32px;height:32px;background:var(--gold-dim);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;font-weight:700;color:var(--gold);">
+                                {{ author.name|slice:":1"|upper }}
+                            </div>
+                            {{ author.name }}
+                        </div>
+                    </td>
+                    <td><span class="count-badge">{{ author.num_books }}</span></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align:center;color:var(--text-3);padding:40px;">No authors found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

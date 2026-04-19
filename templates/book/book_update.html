@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit {{ book.title }} — BookVault{% endblock %}
+
+{% block content %}
+<div class="form-page" style="align-items:flex-start; padding-top:56px;">
+    <div class="form-card" style="max-width:620px;">
+        <span class="eyebrow">Editing</span>
+        <h2>Update Book</h2>
+        <p class="subtitle">You are editing <em style="color:var(--gold)">{{ book.title }}</em>. Modify the fields below and save.</p>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Book Title *</label>
+                    <input type="text" name="title" class="form-control" value="{{ book.title }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Price ($) *</label>
+                    <input type="number" name="price" class="form-control" value="{{ book.price }}" step="0.01" min="0" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Author *</label>
+                    <select name="author" class="form-control" required>
+                        {% for author in authors %}
+                            <option value="{{ author.id }}" {% if book.author_id == author.id %}selected{% endif %}>{{ author.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select name="category" class="form-control" required>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if book.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4">{{ book.description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Replace Cover Image</label>
+                {% if book.cover_image %}
+                    <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px;">
+                        <img src="{{ book.cover_image.url }}" alt="Current cover" style="width:60px;height:90px;object-fit:cover;border-radius:var(--r-sm);border:1px solid var(--line);">
+                        <p style="font-size:13px;color:var(--text-2);">Current cover. Upload a new one to replace it.</p>
+                    </div>
+                {% endif %}
+                <div class="file-input-wrap">
+                    <input type="file" name="cover_image" accept="image/*" onchange="this.nextElementSibling.querySelector('p').textContent = this.files[0]?.name || 'Click to choose a new cover'">
+                    <div>
+                        <span>🖼</span>
+                        <p>Click to choose a new cover</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-gold">Save Changes →</button>
+                <a href="{% url 'book_detail' book.pk %}" class="btn btn-ghost" style="justify-content:center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

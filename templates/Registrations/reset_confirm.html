@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Set New Password — BookVault{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <span class="eyebrow">Almost done</span>
+        <h2>Set New Password</h2>
+        <p class="subtitle">Enter and confirm your new password below.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" name="password" class="form-control" placeholder="At least 8 characters" required autofocus>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-gold">Set Password →</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
