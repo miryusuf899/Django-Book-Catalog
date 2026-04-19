@@ -36,13 +36,13 @@ This project was developed as a final examination project to demonstrate profici
 ## 📸 Screenshots
 
 ### 🖼️ Catalog View
-![Catalog](screenshots/Снимок_экрана_2026-04-15_151800.jpg)
+![Catalog](Снимок_экрана_2026-04-15_151800.jpg)
 
 ### 📈 Statistics Dashboard
-![Statistics](screenshots/image_95425d.jpg)
+![Statistics](image_95425d.jpg)
 
 ### ✍️ Add New Book Form
-![Add Book](screenshots/Снимок_экрана_2026-04-19_171356.jpg)
+![Add Book](Снимок_экрана_2026-04-19_171356.jpg)
 
 ---
 
